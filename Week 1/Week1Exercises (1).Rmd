@@ -69,10 +69,10 @@ Show which value is contained in the test vector. To do this you will need to cr
 
 ```{r ex6}
 #your code below
-matches<- x == test_vector
+matches <- x == test_vector
 matching_indices <- which(matches)
-output_indices <- matching_indices[1:2]
-print(output_indices)
+print(matching_indices)
+
 ```
 
 
