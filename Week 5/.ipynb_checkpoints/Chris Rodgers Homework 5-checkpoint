@@ -1,0 +1,410 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "6bf518ec-c515-43fd-8a1b-bd433e209ad5",
+   "metadata": {},
+   "source": [
+    "Homework 5"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "cfa7c794-6b38-40d7-97c1-d553f3a2036f",
+   "metadata": {},
+   "source": [
+    "Christopher Rodgers"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "56190bf0-f1a3-4d64-bad9-5c658bcb38a1",
+   "metadata": {},
+   "source": [
+    "April 8, 2024"
+   ]
+  },
+  {
+   "cell_type": "raw",
+   "id": "0aa1a7fc-6fe7-4072-ac63-5a5788e85d9f",
+   "metadata": {},
+   "source": [
+    "Problem 1\n",
+    "Load the interest_inflation data from the statsmodels library as a pandas data frame assigned to df. Use the function df.head() to view the first 5 rows of the data. Notice the first observation is indexed at 0. Unlike R, Python is a 0 based index language which means when you iterate or wish to view the first observation of a data object it will be at the index 0.\n",
+    "\n",
+    "What do the columns Dp and R represent? (You can find this using the documentation)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "20904b37-cab2-43bf-b8b6-8cc38a4effbc",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "     year  quarter        Dp      R\n",
+      "0  1972.0      2.0 -0.003133  0.083\n",
+      "1  1972.0      3.0  0.018871  0.083\n",
+      "2  1972.0      4.0  0.024804  0.087\n",
+      "3  1973.0      1.0  0.016278  0.087\n",
+      "4  1973.0      2.0  0.000290  0.102\n"
+     ]
+    }
+   ],
+   "source": [
+    "from statsmodels.datasets.interest_inflation.data import load_pandas\n",
+    "import numpy as np\n",
+    "df = load_pandas().data\n",
+    "print(df.head())\n",
+    "\n",
+    "#Dp represents Delta log gdp deflator, R represents normal long term interest rate."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "98620cba-d8f9-416e-ad90-980b4a8fb4b0",
+   "metadata": {},
+   "source": [
+    "Problem 2\n",
+    "Import scipy as sp and numpy as np. Using the mean() and var() function from scipy, validate that both functions equate to their numpy counterparts against the column Dp.\n",
+    "\n",
+    "By using the scipy library you should receive a warning message. What does the warning message indicate? Which function should you use going forward?"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "51320e6d-5a70-4c3c-b43b-4c1159c21e0d",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "C:\\Users\\crodg\\AppData\\Local\\Temp\\ipykernel_3660\\3511759810.py:4: DeprecationWarning: scipy.mean is deprecated and will be removed in SciPy 2.0.0, use numpy.mean instead\n",
+      "  np.mean(df['Dp']) == sp.mean(df['Dp'])\n",
+      "C:\\Users\\crodg\\AppData\\Local\\Temp\\ipykernel_3660\\3511759810.py:5: DeprecationWarning: scipy.var is deprecated and will be removed in SciPy 2.0.0, use numpy.var instead\n",
+      "  np.var(df['Dp']) == sp.var(df['Dp'])\n"
+     ]
+    },
+    {
+     "data": {
+      "text/plain": [
+       "True"
+      ]
+     },
+     "execution_count": 3,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# your code here\n",
+    "import scipy as sp\n",
+    "import numpy as np\n",
+    "np.mean(df['Dp']) == sp.mean(df['Dp'])\n",
+    "np.var(df['Dp']) == sp.var(df['Dp'])                            \n",
+    "\n",
+    "#scipy.mean is deprecated and will be removed in SciPy 2.0.0, use numpy.mean instead going forward"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "ed1b0496-5696-45b5-aa1f-1ec4e1121724",
+   "metadata": {},
+   "source": [
+    "Problem 3\r\n",
+    "Fit an OLS regression (linear regression) using the statsmodels api where y = df['Dp'] and x = df['R']. By default OLS estimates the theoretical mean of the dependent variable y. Statsmodels.ols does not fit a constant value by default so be sure to add a constant to x. Extract the coefficients into a variable named res1_coefs. See the documentation for params. Finally print the summary() of the model.\r\n",
+    "\r\n",
+    "Documentation: https://www.statsmodels.org/dev/generated/statsmodels.regression.linear_model.OLS.html"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "id": "f3c2af5e-9171-46b4-83ba-e25b89d88130",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "                            OLS Regression Results                            \n",
+      "==============================================================================\n",
+      "Dep. Variable:                     Dp   R-squared:                       0.018\n",
+      "Model:                            OLS   Adj. R-squared:                  0.009\n",
+      "Method:                 Least Squares   F-statistic:                     1.954\n",
+      "Date:                Mon, 08 Apr 2024   Prob (F-statistic):              0.165\n",
+      "Time:                        12:54:58   Log-Likelihood:                 274.44\n",
+      "No. Observations:                 107   AIC:                            -544.9\n",
+      "Df Residuals:                     105   BIC:                            -539.5\n",
+      "Df Model:                           1                                         \n",
+      "Covariance Type:            nonrobust                                         \n",
+      "==============================================================================\n",
+      "                 coef    std err          t      P>|t|      [0.025      0.975]\n",
+      "------------------------------------------------------------------------------\n",
+      "const         -0.0031      0.008     -0.370      0.712      -0.020       0.014\n",
+      "R              0.1545      0.111      1.398      0.165      -0.065       0.374\n",
+      "==============================================================================\n",
+      "Omnibus:                       11.018   Durbin-Watson:                   2.552\n",
+      "Prob(Omnibus):                  0.004   Jarque-Bera (JB):                3.844\n",
+      "Skew:                          -0.050   Prob(JB):                        0.146\n",
+      "Kurtosis:                       2.077   Cond. No.                         61.2\n",
+      "==============================================================================\n",
+      "\n",
+      "Notes:\n",
+      "[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.\n"
+     ]
+    }
+   ],
+   "source": [
+    "# your code here\n",
+    "import statsmodels.api as sm\n",
+    "y = df['Dp']\n",
+    "x = df['R']\n",
+    "x = sm.add_constant(x)\n",
+    "model = sm.OLS(y, x)\n",
+    "\n",
+    "results = model.fit()\n",
+    "\n",
+    "res1_coefs = results.params\n",
+    "print(results.summary())"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "b5d98d80-d180-41e6-af3d-6d26cd2b254d",
+   "metadata": {},
+   "source": [
+    "Probelm 4\n",
+    "Fit a quantile regression model using the statsmodels api using the formula Dp ~ R. By default quantreg creates a constant so there is no need to add one to this model. In your fit() method be sure to set q = 0.5 so that we are estimating the theoritical median. Extract the coefficients into a variable named res2_coefs. Finally print the summary() of the model.\n",
+    "\n",
+    "Documentation: https://www.statsmodels.org/dev/generated/statsmodels.regression.quantile_regression.QuantReg.html"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "id": "b8382eb7-91e1-4b87-976b-ce59b0cc807b",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "                         QuantReg Regression Results                          \n",
+      "==============================================================================\n",
+      "Dep. Variable:                     Dp   Pseudo R-squared:              0.02100\n",
+      "Model:                       QuantReg   Bandwidth:                     0.02021\n",
+      "Method:                 Least Squares   Sparsity:                      0.05748\n",
+      "Date:                Mon, 08 Apr 2024   No. Observations:                  107\n",
+      "Time:                        12:55:28   Df Residuals:                      105\n",
+      "                                        Df Model:                            1\n",
+      "==============================================================================\n",
+      "                 coef    std err          t      P>|t|      [0.025      0.975]\n",
+      "------------------------------------------------------------------------------\n",
+      "Intercept     -0.0054      0.013     -0.417      0.677      -0.031       0.020\n",
+      "R              0.1818      0.169      1.075      0.285      -0.153       0.517\n",
+      "==============================================================================\n"
+     ]
+    }
+   ],
+   "source": [
+    "# your code here\n",
+    "import statsmodels.formula.api as smf\n",
+    "mod = smf.quantreg(\"Dp~R\", data=df)\n",
+    "res = mod.fit(q=0.5)\n",
+    "res2_coefs = res.params\n",
+    "\n",
+    "print(res.summary())\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "843d6d10-7d94-4771-9083-c478968a7a9f",
+   "metadata": {},
+   "source": [
+    "Problem 5\n",
+    "Part 1: Use the type() method to determine the type of res1_coefs and res2_coefs. Print the type in a Jupyter cell.\n",
+    "\n",
+    "Part 2: In the next Jupyter cell show that res1_coefs > res2_coefs. What does the error mean? To resolve this error we must convert the data to an unnamed object or change the names of the objects. Since we are not focusing on pandas this week we will simply convert to a different data type.\n",
+    "\n",
+    "Part 3: Now, do the same comparision using the tolist() function at the end of each object name.\n",
+    "\n",
+    "Part 4: We performed two types of linear regression and compared their coefficients. Coefficients are essentially the rate at which x changes the values of y. Do some research on what OLS estimates versus what quantreg estimates and explain why we have two different coefficient estimates. In which cases do you think quantile regression will be useful? What about ordinary least squares regression?"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "id": "bd65b317-33b6-4db2-84d9-0ce260d87a09",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "<class 'pandas.core.series.Series'>\n",
+      "<class 'pandas.core.series.Series'>\n"
+     ]
+    }
+   ],
+   "source": [
+    "# your code here\n",
+    "print(type(res1_coefs))\n",
+    "print(type(res2_coefs))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "id": "26a397c7-622a-447c-9d9f-9359223e018c",
+   "metadata": {},
+   "outputs": [
+    {
+     "ename": "ValueError",
+     "evalue": "Can only compare identically-labeled Series objects",
+     "output_type": "error",
+     "traceback": [
+      "\u001b[1;31m---------------------------------------------------------------------------\u001b[0m",
+      "\u001b[1;31mValueError\u001b[0m                                Traceback (most recent call last)",
+      "Cell \u001b[1;32mIn[7], line 1\u001b[0m\n\u001b[1;32m----> 1\u001b[0m res1_coefs \u001b[38;5;241m>\u001b[39m res2_coefs\n",
+      "File \u001b[1;32m~\\anaconda3\\Lib\\site-packages\\pandas\\core\\ops\\common.py:76\u001b[0m, in \u001b[0;36m_unpack_zerodim_and_defer.<locals>.new_method\u001b[1;34m(self, other)\u001b[0m\n\u001b[0;32m     72\u001b[0m             \u001b[38;5;28;01mreturn\u001b[39;00m \u001b[38;5;28mNotImplemented\u001b[39m\n\u001b[0;32m     74\u001b[0m other \u001b[38;5;241m=\u001b[39m item_from_zerodim(other)\n\u001b[1;32m---> 76\u001b[0m \u001b[38;5;28;01mreturn\u001b[39;00m method(\u001b[38;5;28mself\u001b[39m, other)\n",
+      "File \u001b[1;32m~\\anaconda3\\Lib\\site-packages\\pandas\\core\\arraylike.py:56\u001b[0m, in \u001b[0;36mOpsMixin.__gt__\u001b[1;34m(self, other)\u001b[0m\n\u001b[0;32m     54\u001b[0m \u001b[38;5;129m@unpack_zerodim_and_defer\u001b[39m(\u001b[38;5;124m\"\u001b[39m\u001b[38;5;124m__gt__\u001b[39m\u001b[38;5;124m\"\u001b[39m)\n\u001b[0;32m     55\u001b[0m \u001b[38;5;28;01mdef\u001b[39;00m \u001b[38;5;21m__gt__\u001b[39m(\u001b[38;5;28mself\u001b[39m, other):\n\u001b[1;32m---> 56\u001b[0m     \u001b[38;5;28;01mreturn\u001b[39;00m \u001b[38;5;28mself\u001b[39m\u001b[38;5;241m.\u001b[39m_cmp_method(other, operator\u001b[38;5;241m.\u001b[39mgt)\n",
+      "File \u001b[1;32m~\\anaconda3\\Lib\\site-packages\\pandas\\core\\series.py:5798\u001b[0m, in \u001b[0;36mSeries._cmp_method\u001b[1;34m(self, other, op)\u001b[0m\n\u001b[0;32m   5795\u001b[0m res_name \u001b[38;5;241m=\u001b[39m ops\u001b[38;5;241m.\u001b[39mget_op_result_name(\u001b[38;5;28mself\u001b[39m, other)\n\u001b[0;32m   5797\u001b[0m \u001b[38;5;28;01mif\u001b[39;00m \u001b[38;5;28misinstance\u001b[39m(other, Series) \u001b[38;5;129;01mand\u001b[39;00m \u001b[38;5;129;01mnot\u001b[39;00m \u001b[38;5;28mself\u001b[39m\u001b[38;5;241m.\u001b[39m_indexed_same(other):\n\u001b[1;32m-> 5798\u001b[0m     \u001b[38;5;28;01mraise\u001b[39;00m \u001b[38;5;167;01mValueError\u001b[39;00m(\u001b[38;5;124m\"\u001b[39m\u001b[38;5;124mCan only compare identically-labeled Series objects\u001b[39m\u001b[38;5;124m\"\u001b[39m)\n\u001b[0;32m   5800\u001b[0m lvalues \u001b[38;5;241m=\u001b[39m \u001b[38;5;28mself\u001b[39m\u001b[38;5;241m.\u001b[39m_values\n\u001b[0;32m   5801\u001b[0m rvalues \u001b[38;5;241m=\u001b[39m extract_array(other, extract_numpy\u001b[38;5;241m=\u001b[39m\u001b[38;5;28;01mTrue\u001b[39;00m, extract_range\u001b[38;5;241m=\u001b[39m\u001b[38;5;28;01mTrue\u001b[39;00m)\n",
+      "\u001b[1;31mValueError\u001b[0m: Can only compare identically-labeled Series objects"
+     ]
+    }
+   ],
+   "source": [
+    "res1_coefs > res2_coefs"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "973e078c-306b-417f-8530-0d3f129867dc",
+   "metadata": {},
+   "source": [
+    "#cannot be compared using >"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "id": "8278a1c9-6d06-4116-9a99-73eb94a51ce0",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "True"
+      ]
+     },
+     "execution_count": 8,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "res1_coefs.tolist() > res2_coefs.tolist()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "9a3fb947-3327-48fd-b384-e7fa0e6d0271",
+   "metadata": {},
+   "source": [
+    "Ordinary Least Squares (OLS) regression is appropriate when the focus is on estimating the average effect of predictors on the dependent variable, assuming linearity. Effect is of primary interest and relationship between variables is reasonable linear."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "0479e98e-21c1-4392-9c39-d0f060c72c1c",
+   "metadata": {},
+   "source": [
+    " Quantile regression is useful in cases where the researcher is interested in understanding how the effects of predictors vary across different quantiles of the dependent variable's distribution."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "f5e1542e-7e93-4f4e-9411-0b6f277ed1e1",
+   "metadata": {},
+   "source": [
+    "We have two different coefficient estimates because Ordinary Least Squares (OLS) regression and Quantile Regression (quantreg) employ different approaches to estimating the relationship between variables. OLS focuses on estimating the conditional mean, while quantreg estimates conditional quantiles, leading to distinct coefficient estimates that capture different aspects of the data's distribution."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "e099d0b6-a7c5-4e9b-94d8-3b83192ded15",
+   "metadata": {},
+   "source": [
+    "Problem 6\n",
+    "What are the advantages of using Python as a general purpose programming language? What are the disadvantages? Why do you think data scientists and machine learning engineers prefer Python over other statistically focused languages like R? Your answer should a paragraph for: (1) advantages, (2) disadvantages, and (3) why its popular. Please cite each source used in your answer."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "40db9897-34f8-4cbf-9cb3-b5aadb9ac282",
+   "metadata": {},
+   "source": [
+    "(1) Python's advantages as a general-purpose programming language include its simplicity and readability, making it accessible for beginners and allowing for rapid development (Sunbul, 2024). Python boasts a vast ecosystem of libraries and frameworks for various purposes, facilitating tasks from web development to scientific computing. Its versatility allows it to be used seamlessly across different platforms and operating systems.\n",
+    "\n",
+    "(2) Despite its strengths, Python does have some drawbacks. Its performance can be slower than lower-level languages like C or C++, which may pose challenges for computationally intensive tasks or real-time applications (Hadi J, 2024). Additionally, Python's dynamic typing can lead to potential runtime errors that might not be caught until execution. While Python's simplicity is advantageous for beginners, it may need more advanced features in other languages, limiting its suitability for specific niche applications.\n",
+    "\n",
+    "(3) Due to its versatility and ecosystem, Data scientists and machine learning engineers often prefer Python over statistically focused languages like R (Let's Decode, 2023). Python's extensive libraries, such as NumPy, pandas, and scikit-learn, provide powerful tools for data manipulation, analysis, and machine learning. Python's straightforward syntax and readability make prototyping and deploying machine learning models easier. Its integration with other technologies, such as web frameworks like Django and Flask, enables seamless development and deployment of machine learning applications. Overall, Python's simplicity, versatility, and extensive libraries make it a preferred choice for data science and machine learning tasks."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "f18d8960-925b-4496-9baf-258d656c2f45",
+   "metadata": {},
+   "source": [
+    "References"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "c433df1e-5b76-49ff-8f9a-b31074bf28a6",
+   "metadata": {},
+   "source": [
+    "Decode, L. (2023, November 8). Why should you choose python over R for data science?. Medium. https://medium.com/@debopamdeycse19/python-vs-r-for-data-science-which-should-i-learn-a236c197c2bd \n",
+    "\n",
+    "Hadi J., M. H. (2024, January 11). Python is bad, and here is why?. Medium. https://medium.com/@jiwani.mhadi/python-is-bad-and-here-is-why-3d398a802ad7#:~:text=Python%20is%20an%20interpreted%20language,computing%20or%20resource%2Dintensive%20simulations.\n",
+    "\n",
+    "Sunbul. (2024, January 31). Exploring the advantages and disadvantages of python. RedSwitches. https://www.redswitches.com/blog/advantages-and-disadvantages-of-python/ "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "c58cbcae-243f-4c9f-938f-217c6c3fe94d",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.11.7"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
